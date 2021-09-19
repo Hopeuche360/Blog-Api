@@ -1,6 +1,5 @@
 package com.example.week9task.controller;
 
-import com.example.week9task.model.Posts;
 import com.example.week9task.service.PostLikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

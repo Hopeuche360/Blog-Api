@@ -97,4 +97,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void cancelDelete(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->
+                new ResourceNotFoundException("User", "userId", userId));
+        if (user.isFlag()) {
+            user.setFlag(false);
+            userRepository.save(user);
+        }
+    }
+
 }

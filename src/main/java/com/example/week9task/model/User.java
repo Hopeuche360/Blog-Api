@@ -37,8 +37,9 @@ public class User {
 
     private boolean flag;
 
-    @ManyToOne
-    private UserConnections userConnections;
+    @OneToMany
+    @JsonIgnore
+    private Set<UserConnections> friendList;
 
     @OneToMany
 //    @JsonIgnore

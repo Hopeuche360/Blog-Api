@@ -19,7 +19,7 @@ public class ScheduledTasks {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    @Scheduled(fixedDelay = 20000)
+    @Scheduled(fixedDelay = 180000)
     public void remove() {
         List<User> users = userRepository.findUserByFlag(true);
         userRepository.deleteAll(users);

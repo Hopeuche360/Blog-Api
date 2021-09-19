@@ -1,5 +1,6 @@
 package com.example.week9task.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,8 @@ public class UserConnections {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany
-    private Set<User> connectionList;
+    @ManyToOne
+    @JsonIgnore
+    private User user;
 
 }

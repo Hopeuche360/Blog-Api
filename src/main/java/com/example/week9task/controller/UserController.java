@@ -40,15 +40,21 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserById(userid), HttpStatus.OK);
     }
 
-    @PutMapping("{userId}")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<?> updateUser(@RequestBody User user,
                                            @PathVariable(value = "userId") long id) {
         return new ResponseEntity<>(userService.updateUser(user, id), HttpStatus.OK);
     }
 
-    @DeleteMapping("{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable(value = "userId") long id) {
-        userService.deleteUserById(id);
-        return new ResponseEntity<String>("User successfully deleted", HttpStatus.OK);
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable(value = "userId") long userId) {
+        userService.deleteUserById(userId);
+        return new ResponseEntity<String>("Delete Operation Initiated", HttpStatus.OK);
+    }
+
+    @PostMapping("/cancel-delete/{userId}")
+    public ResponseEntity<String> cancelDeleteOperation(@PathVariable(value = "userId") long userId) {
+        userService.cancelDelete(userId);
+        return new ResponseEntity<>("Deletion Successfully cancelled", HttpStatus.OK);
     }
 }
