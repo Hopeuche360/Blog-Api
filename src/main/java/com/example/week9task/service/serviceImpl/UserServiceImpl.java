@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,15 +48,38 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<?> userLogin(LoginDto loginDto) {
+    public ResponseEntity<?> userLogin(LoginDto loginDto, HttpSession httpSession) {
         ApiResponse apiResponse = new ApiResponse();
         Optional<User> user = userRepository.findUserByUserNameAndPassword(loginDto.getUserName(), loginDto.getPassword());
         if (user.isPresent()){
-            apiResponse.setMessage("Login successful");
+            User loggedInUser = (User) httpSession.getAttribute(user.get().getUserName());
+            if (loggedInUser !=null) {
+                apiResponse.setMessage("Welcome Back");
+                apiResponse.setData(user);
+                return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            }
+            httpSession.setAttribute(user.get().getUserName(), user);
+            apiResponse.setMessage("Login Successful");
             apiResponse.setData(user);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
         throw new ResourceNotFoundException("user", "userId", loginDto);
+    }
+
+    @Override
+    public ResponseEntity<?> userLogout(long userId, HttpSession httpSession) {
+        ApiResponse response = new ApiResponse();
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()){
+            User loggedInUser = (User) httpSession.getAttribute(user.get().getUserName());
+            if (loggedInUser !=null) {
+                httpSession.removeAttribute(user.get().getUserName());
+                response.setMessage("Log out successful");
+                response.setData(user);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        }
+        throw new ResourceNotFoundException("user", "userId", userId);
     }
 
 

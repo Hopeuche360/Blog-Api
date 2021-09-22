@@ -14,10 +14,15 @@ import java.util.List;
 @Configuration
 @EnableScheduling
 public class ScheduledTasks {
-    @Autowired
+
     private UserRepository userRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    @Autowired
+    public ScheduledTasks(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+//    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
+//    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Scheduled(fixedDelay = 180000)
     public void remove() {

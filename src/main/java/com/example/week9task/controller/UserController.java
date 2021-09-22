@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -26,8 +27,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin(@RequestBody LoginDto loginDto) {
-        return new ResponseEntity<>(userService.userLogin(loginDto), HttpStatus.OK);
+    public ResponseEntity<?> userLogin(@RequestBody LoginDto loginDto, HttpSession httpSession) {
+        return new ResponseEntity<>(userService.userLogin(loginDto,httpSession), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout/{userId}")
+    public ResponseEntity<?> userLogout(@PathVariable(value = "userId") long userId, HttpSession httpSession) {
+        return  new ResponseEntity<>(userService.userLogout(userId, httpSession), HttpStatus.OK);
     }
 
     @GetMapping("/get")

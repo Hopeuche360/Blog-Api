@@ -1,6 +1,6 @@
 package com.example.week9task.service.serviceImpl;
 
-import com.example.week9task.dto.ApiResponse;
+import com.example.week9task.dto.LoginDto;
 import com.example.week9task.dto.SignUpDto;
 import com.example.week9task.exception.ResourceNotFoundException;
 import com.example.week9task.model.User;
@@ -9,24 +9,19 @@ import com.example.week9task.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -34,8 +29,11 @@ class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
-    @InjectMocks
-    private UserServiceImpl userService;
+
+    @Mock
+    private UserService userService;
+
+    private final MockHttpSession httpSession = new MockHttpSession();
 
     @BeforeEach
     void setUp() {
@@ -65,10 +63,21 @@ class UserServiceImplTest {
 
     }
 
-//    @Test
-//    void userLogin() {
+    @Test
+    void userLogin() {
+        User user = new User();
 
-//    }
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUserName("Obuneme");
+        loginDto.setPassword("hashmap");
+        user.setUserName(loginDto.getUserName());
+        user.setPassword(loginDto.getPassword());
+//        Optional<User> optional = userRepository.findUserByUserNameAndPassword(loginDto.getUserName(), loginDto.getPassword());
+
+//        when(optional).thenReturn(Optional.of(user));
+        ResponseEntity<?> responseEntity = userService.userLogin(loginDto, httpSession);
+        assertEquals(userService.userLogin(loginDto, httpSession), responseEntity);
+    }
 
 //    @Test
 //    void getAllUsers() {
@@ -83,7 +92,7 @@ class UserServiceImplTest {
 
     @Test
     void getUserById() {
-        Long id = 1L;
+        long id = 1L;
         User user = new User();
         given(userRepository.findById(id)).willReturn(Optional.of(user));
         assertNotNull(userService.getUserById(id));
@@ -92,7 +101,7 @@ class UserServiceImplTest {
     @Test
     void updateUser() {
         User user = new User();
-        Long id = 1L;
+        long id = 1L;
 //        assertNotNull(userService.updateUser(user, id));
         assertThrows(ResourceNotFoundException.class, ()-> {userService.updateUser(user, id);
         });

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -23,8 +24,9 @@ public class PostController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<?> createPost(@PathVariable(value = "userId") long userId, @RequestBody String content) {
-        return postsService.createPost(userId, content);
+    public ResponseEntity<?> createPost(@PathVariable(value = "userId") long userId,
+                                        @RequestBody String content, HttpSession httpSession) {
+        return postsService.createPost(userId, content, httpSession);
     }
 
     @GetMapping("/get")
@@ -39,10 +41,11 @@ public class PostController {
     }
 
     @PostMapping("/edit/{userId}/{postId}")
-    public ResponseEntity<Posts> editPost(@RequestBody String content,
+    public ResponseEntity<?> editPost(@RequestBody String content,
                                           @PathVariable(value = "userId") long userId,
-                                          @PathVariable(value = "postId") long postId) {
-        return new ResponseEntity<Posts>(postsService.editPost(content, userId, postId), HttpStatus.OK);
+                                          @PathVariable(value = "postId") long postId,
+                                          HttpSession httpSession) {
+        return new ResponseEntity<>(postsService.editPost(content, userId, postId, httpSession), HttpStatus.OK);
     }
 
     @PostMapping("/add-favorite/{userId}/{postId}")

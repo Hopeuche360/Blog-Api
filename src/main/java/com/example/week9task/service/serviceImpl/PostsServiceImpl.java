@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,16 +32,22 @@ public class PostsServiceImpl implements PostsService {
     }
 
     @Override
-    public ResponseEntity<?> createPost(Long userId, String content) {
+    public ResponseEntity<?> createPost(Long userId, String content, HttpSession httpSession) {
+        ApiResponse response = new ApiResponse();
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent() && !content.isBlank()){
+//            User currentUser = user.get();
+            Object loggedInUser = httpSession.getAttribute(user.get().getUserName());
+            if (loggedInUser ==null) {
+                response.setMessage(user.get().getUserName() + " is currently not logged in");
+                response.setData(user);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
             Posts posts = new Posts();
             posts.setContent(content);
-//            posts.setUser(user.get());
             Posts posts1 = postsRepository.save(posts);
             user.get().getPosts().add(posts1);
             userRepository.save(user.get());
-            ApiResponse response = new ApiResponse();
             response.setMessage("Post created successfully");
             response.setData(user.get());
             return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -66,16 +73,20 @@ public class PostsServiceImpl implements PostsService {
 
 
     @Override
-    public Posts editPost(String content, long userId, long postId) {
+    public ResponseEntity<?> editPost(String content, long userId, long postId, HttpSession httpSession) {
         Posts existingPost = postsRepository.findById(postId).orElseThrow(()->
                 new ResourceNotFoundException("Post", "postId", postId));
         User existingUser = userRepository.findById(userId).orElseThrow(()->
                 new ResourceNotFoundException("User", "userId", userId));
 
         if (existingUser.getPosts().contains(existingPost)) {
+            Object loggedInUser = httpSession.getAttribute(existingUser.getUserName());
+            if (loggedInUser ==null) {
+                return new ResponseEntity<>(existingUser.getUserName() + " is currently not logged in", HttpStatus.OK);
+            }
             existingPost.setContent(content);
             postsRepository.save(existingPost);
-            return existingPost;
+            return new ResponseEntity<>(existingPost, HttpStatus.OK);
         } throw new ResourceNotFoundException("Post", "content", content);
     }
 
